@@ -1,5 +1,5 @@
 [package]
-name = "assignment-2"
+name = "money_typesafe"
 version = "0.1.0"
 authors = ["Tim Boyle <https://github.com/Timboski/learn-rust-in-7-days>"]
 edition = "2018"

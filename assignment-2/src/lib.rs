@@ -1,7 +1,8 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+//! A library for handling money in a typesafe way
+
+pub mod parse;
+//pub mod printer;
+
+//pub mod currencies;
+//pub mod exchange;
+
