@@ -47,17 +47,30 @@ mod tests{
     use super::*;
 
     #[test]
-    fn parseany(){
+    fn given_valid_string_when_parse_money_then_returns_expected_currency_symbol() {
+        let (c,v) = parse_money("£34.3",2).unwrap();
+        assert_eq!(c,'£');
+    }
+    
+    #[test]
+    fn given_valid_string_when_parse_money_then_returns_expected_currency_value() {
         let (c,v) = parse_money("£34.3",2).unwrap();
         assert_eq!(c,'£');
         assert_eq!(v,3430);
-
-        assert!(parse_money("£34.304",2).is_err());
-        assert!(parse_money("£34..04",2).is_err());
-
-        assert_eq!(parse_money("£.34",2),Ok(('£',34)));
     }
 
+    #[test]
+    fn given_too_many_decimal_places_when_parse_money_then_returns_err() {
+        assert!(parse_money("£34.304",2).is_err());
+    }
+
+    #[test]
+    fn given_invalid_format_when_parse_money_then_returns_err() {
+        assert!(parse_money("£34..04",2).is_err());
+    }
+
+    #[test]
+    fn given_only_pence_when_parse_money_then_returns_expected_result() {
+        assert_eq!(parse_money("£.34",2),Ok(('£',34)));
+    }
 }
-
-
