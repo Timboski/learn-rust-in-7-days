@@ -5,6 +5,14 @@ use std::env::args;
 
 fn main() {
     for name in args() {
-        println!("Hello {}", name);
+        for (index, letter) in name.char_indices() {
+            match index {
+                0 => match letter {
+                    'W'|'w' => println!("Hello {}", name),
+                    _ => break
+                }
+                _ => break
+            }            
+        }
     }    
 }
