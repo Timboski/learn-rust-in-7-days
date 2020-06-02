@@ -5,14 +5,11 @@ use std::env::args;
 
 fn main() {
     for name in args() {
-        for (index, letter) in name.char_indices() {
-            match index {
-                0 => match letter {
-                    'W'|'w' => println!("Hello {}", name),
-                    _ => break
-                }
-                _ => break
-            }            
+        if let Some(first_letter) = name.chars().next() {
+            match first_letter {
+                'W'|'w' => println!("Hello {}", name),
+                _ => {},
+            }
         }
-    }    
+    }
 }
