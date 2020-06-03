@@ -38,8 +38,14 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
 //
 // assert_eq!(parse_money("£.34",2),Ok(('£',34)));
 /// ```
-pub fn parse_money(s:&str,dpoint:usize)->Result<(char,i32),ParseMoneyError>{
-    let symbol = s.chars().next().unwrap();
+pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
+    let first_character = s.chars().next();
+    
+    if first_character.is_none() {
+        return Err(ParseMoneyError::NoStringErr);
+    }
+
+    let symbol = first_character.unwrap();
     Ok((symbol, 0))
 }
 
@@ -63,6 +69,12 @@ mod tests{
     fn given_valid_euro_string_when_parse_money_then_returns_euro_currency_symbol() {
         let (c,v) = parse_money("€50",2).unwrap();
         assert_eq!(c,'€');
+    }
+
+    #[test]
+    fn given_empty_string_when_parse_money_then_returns_no_string_error() {
+        let err = parse_money("",2).unwrap_err();
+        assert_eq!(err,ParseMoneyError::NoStringErr);
     }
     
     //#[test]
