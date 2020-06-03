@@ -39,7 +39,8 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
 // assert_eq!(parse_money("£.34",2),Ok(('£',34)));
 /// ```
 pub fn parse_money(s:&str,dpoint:usize)->Result<(char,i32),ParseMoneyError>{
-    Ok(('£',0))
+    let symbol = s.chars().next().unwrap();
+    Ok((symbol, 0))
 }
 
 #[cfg(test)]
@@ -47,9 +48,21 @@ mod tests{
     use super::*;
 
     #[test]
-    fn given_valid_string_when_parse_money_then_returns_expected_currency_symbol() {
+    fn given_valid_gbp_string_when_parse_money_then_returns_pound_currency_symbol() {
         let (c,v) = parse_money("£34.3",2).unwrap();
         assert_eq!(c,'£');
+    }
+
+    #[test]
+    fn given_valid_usd_string_when_parse_money_then_returns_dollar_currency_symbol() {
+        let (c,v) = parse_money("$15.50",2).unwrap();
+        assert_eq!(c,'$');
+    }
+
+    #[test]
+    fn given_valid_euro_string_when_parse_money_then_returns_euro_currency_symbol() {
+        let (c,v) = parse_money("€50",2).unwrap();
+        assert_eq!(c,'€');
     }
     
     //#[test]
