@@ -95,7 +95,7 @@ impl MoneyValueBuilder {
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     let mut it = s.chars();
-    let mut symbol = None;
+    let symbol;
 
     let mut value_builder = MoneyValueBuilder::new();
 
