@@ -90,7 +90,7 @@ impl MoneyValueBuilder {
 /// assert!(parse_money("£34.304",2).is_err());
 /// assert!(parse_money("£34..04",2).is_err());
 ///
-// assert_eq!(parse_money("£.34",2),Ok(('£',34)));
+/// assert_eq!(parse_money("£.34",2),Ok(('£',34)));
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     let mut it = s.chars();
@@ -168,7 +168,7 @@ mod tests{
         assert!(parse_money("£34..04",2).is_err());
     }
 
-    //#[test]
+    #[test]
     fn given_only_pence_when_parse_money_then_returns_expected_result() {
         assert_eq!(parse_money("£.34",2),Ok(('£',34)));
     }
