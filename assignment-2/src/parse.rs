@@ -61,6 +61,10 @@ impl MoneyValueBuilder {
     }
 
     fn build(mut self) -> Result<i32,ParseMoneyError> {
+        if self.num_decimal_places > self.max_decimal_places {
+            return Err(ParseMoneyError::TooFarErr);
+        }
+
         self.pad_decimal_places();
         Ok(self.digits.parse().unwrap())
     }
@@ -80,8 +84,8 @@ impl MoneyValueBuilder {
 /// let (c,v) = parse_money("£34.3",2).unwrap();
 /// assert_eq!(c,'£');
 /// assert_eq!(v,3430);
-//
-// assert!(parse_money("£34.304",2).is_err());
+///
+/// assert!(parse_money("£34.304",2).is_err());
 // assert!(parse_money("£34..04",2).is_err());
 //
 // assert_eq!(parse_money("£.34",2),Ok(('£',34)));
@@ -102,8 +106,7 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
         value_builder.add(next_character);
     }
 
-    let value = value_builder.build().unwrap();
-
+    let value = value_builder.build()?;
     Ok((symbol, value))
 }
 
@@ -153,7 +156,7 @@ mod tests{
         assert_eq!(v,34300);
     }
 
-    //#[test]
+    #[test]
     fn given_too_many_decimal_places_when_parse_money_then_returns_err() {
         assert!(parse_money("£34.304",2).is_err());
     }
