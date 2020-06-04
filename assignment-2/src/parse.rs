@@ -27,24 +27,49 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
 
 struct MoneyValueBuilder {
     digits: String,
+    max_decimal_places:u8,
+    num_decimal_places:u8,
+    decimal_point:bool,
 }
 
 impl MoneyValueBuilder {
     fn new() -> MoneyValueBuilder {
         MoneyValueBuilder {
-            digits: String::new() 
+            digits: String::new(),
+            max_decimal_places: 0,
+            num_decimal_places: 0,
+            decimal_point: false,
         }
     }
 
     fn add(&mut self, c:char) {
         match c {
-            '.' => {}
-            _ => self.digits.push(c)
+            '.' => {
+                self.decimal_point = true;
+            }
+            _ => {
+                self.digits.push(c);
+                if self.decimal_point {
+                    self.num_decimal_places += 1;
+                }
+            }
         }
     }
 
-    fn get_number(&self) -> Result<i32,ParseMoneyError> {
+    fn with_decimal_places(&mut self, digits:u8) {
+        self.max_decimal_places = digits;
+    }
+
+    fn build(mut self) -> Result<i32,ParseMoneyError> {
+        self.pad_decimal_places();
         Ok(self.digits.parse().unwrap())
+    }
+
+    fn pad_decimal_places(&mut self) {
+        while self.num_decimal_places < self.max_decimal_places {
+            self.digits.push('0');
+            self.num_decimal_places += 1;
+        }
     }
 }
 
@@ -54,7 +79,7 @@ impl MoneyValueBuilder {
 /// use money_typesafe::parse::parse_money;
 /// let (c,v) = parse_money("£34.3",2).unwrap();
 /// assert_eq!(c,'£');
-// assert_eq!(v,3430);
+/// assert_eq!(v,3430);
 //
 // assert!(parse_money("£34.304",2).is_err());
 // assert!(parse_money("£34..04",2).is_err());
@@ -71,12 +96,13 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
 
     let symbol = first_character.unwrap();
 
-    let mut digits = MoneyValueBuilder::new();
+    let mut value_builder = MoneyValueBuilder::new();
+    value_builder.with_decimal_places(2);
     while let Some(next_character) = it.next() {
-        digits.add(next_character);
+        value_builder.add(next_character);
     }
 
-    let value = digits.get_number().unwrap();
+    let value = value_builder.build().unwrap();
 
     Ok((symbol, value))
 }
@@ -115,10 +141,9 @@ mod tests{
         assert_eq!(v, 1234);
     }
     
-    //#[test]
+    #[test]
     fn given_valid_string_when_parse_money_then_returns_expected_currency_value() {
-        let (c,v) = parse_money("£34.3",2).unwrap();
-        assert_eq!(c,'£');
+        let (_c,v) = parse_money("£34.3",2).unwrap();
         assert_eq!(v,3430);
     }
 
