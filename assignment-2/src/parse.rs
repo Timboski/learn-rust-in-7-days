@@ -39,14 +39,26 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
 // assert_eq!(parse_money("£.34",2),Ok(('£',34)));
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
-    let first_character = s.chars().next();
+    let mut it = s.chars();
+    let first_character = it.next();
     
     if first_character.is_none() {
         return Err(ParseMoneyError::NoStringErr);
     }
 
     let symbol = first_character.unwrap();
-    Ok((symbol, 0))
+
+    let mut number = String::new();
+    while let Some(next_character) = it.next() {
+        match next_character {
+            '.' => {}
+            _ => number.push(next_character)
+        }
+    }
+
+    let value = number.parse().unwrap();
+
+    Ok((symbol, value))
 }
 
 #[cfg(test)]
@@ -75,6 +87,12 @@ mod tests{
     fn given_empty_string_when_parse_money_then_returns_no_string_error() {
         let err = parse_money("",2).unwrap_err();
         assert_eq!(err,ParseMoneyError::NoStringErr);
+    }
+
+    #[test]
+    fn given_full_string_when_parse_money_then_returns_expected_currency_value() {
+        let (_c, v) = parse_money("£12.34", 2).unwrap();
+        assert_eq!(v, 1234);
     }
     
     //#[test]
