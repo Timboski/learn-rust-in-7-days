@@ -25,6 +25,29 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
     Ok(v)
 }
 
+struct MoneyValueBuilder {
+    digits: String,
+}
+
+impl MoneyValueBuilder {
+    fn new() -> MoneyValueBuilder {
+        MoneyValueBuilder {
+            digits: String::new() 
+        }
+    }
+
+    fn add(&mut self, c:char) {
+        match c {
+            '.' => {}
+            _ => self.digits.push(c)
+        }
+    }
+
+    fn get_number(&self) -> Result<i32,ParseMoneyError> {
+        Ok(self.digits.parse().unwrap())
+    }
+}
+
 /// Parse currency notation returning currency symbol and value as i32
 ///
 /// ```
@@ -48,15 +71,12 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
 
     let symbol = first_character.unwrap();
 
-    let mut number = String::new();
+    let mut digits = MoneyValueBuilder::new();
     while let Some(next_character) = it.next() {
-        match next_character {
-            '.' => {}
-            _ => number.push(next_character)
-        }
+        digits.add(next_character);
     }
 
-    let value = number.parse().unwrap();
+    let value = digits.get_number().unwrap();
 
     Ok((symbol, value))
 }
