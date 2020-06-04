@@ -192,9 +192,9 @@ mod tests{
         assert_eq!(c,'£');
     }
 
-    //#[test]
+    #[test]
     fn given_negative_value_when_parse_money_then_returns_expected_result() {
         let (_c,v) = parse_money("-£123.45",2).unwrap();
-        assert_eq!(v,12345);
+        assert_eq!(v,-12345);
     }
 }
