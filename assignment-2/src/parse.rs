@@ -1,4 +1,3 @@
-use self::ParseMoneyError::*;
 
 #[derive(Debug,PartialEq)]
 pub enum ParseMoneyError {
