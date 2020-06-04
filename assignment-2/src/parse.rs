@@ -91,16 +91,25 @@ impl MoneyValueBuilder {
 /// assert!(parse_money("£34..04",2).is_err());
 ///
 /// assert_eq!(parse_money("£.34",2),Ok(('£',34)));
+/// 
+/// assert_eq!(parse_money("-£123.45",2),Ok(('£',-12345)));
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     let mut it = s.chars();
-    let first_character = it.next();
-    
-    if first_character.is_none() {
-        return Err(ParseMoneyError::NoStringErr);
-    }
+    let mut negative = false;
+    let mut symbol = None;
 
-    let symbol = first_character.unwrap();
+    loop  {
+        let character = it.next();
+        match character {
+            None => return Err(ParseMoneyError::NoStringErr),
+            Some('-') => negative = true,
+            s => {
+                symbol = s;
+                break;
+            } 
+        }
+    }
 
     let mut value_builder = MoneyValueBuilder::new();
     value_builder.with_decimal_places(dpoint);
@@ -108,8 +117,12 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
         value_builder.add(next_character);
     }
 
-    let value = value_builder.build()?;
-    Ok((symbol, value))
+    let mut value = value_builder.build()?;
+    if negative {
+        value = -value;
+    }
+
+    Ok((symbol.unwrap(), value))
 }
 
 #[cfg(test)]
@@ -171,5 +184,17 @@ mod tests{
     #[test]
     fn given_only_pence_when_parse_money_then_returns_expected_result() {
         assert_eq!(parse_money("£.34",2),Ok(('£',34)));
+    }
+
+    #[test]
+    fn given_negative_value_when_parse_money_then_returns_expected_currency_symbol() {
+        let (c,_v) = parse_money("-£123.45",2).unwrap();
+        assert_eq!(c,'£');
+    }
+
+    //#[test]
+    fn given_negative_value_when_parse_money_then_returns_expected_result() {
+        let (_c,v) = parse_money("-£123.45",2).unwrap();
+        assert_eq!(v,12345);
     }
 }
