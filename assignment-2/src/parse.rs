@@ -27,8 +27,8 @@ pub fn parse_sym_money(s:&str,sym:char,dpoint:usize)->Result<i32,ParseMoneyError
 
 struct MoneyValueBuilder {
     digits: String,
-    max_decimal_places:u8,
-    num_decimal_places:u8,
+    max_decimal_places:usize,
+    num_decimal_places:usize,
     decimal_point:bool,
 }
 
@@ -56,7 +56,7 @@ impl MoneyValueBuilder {
         }
     }
 
-    fn with_decimal_places(&mut self, digits:u8) {
+    fn with_decimal_places(&mut self, digits:usize) {
         self.max_decimal_places = digits;
     }
 
@@ -97,7 +97,7 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     let symbol = first_character.unwrap();
 
     let mut value_builder = MoneyValueBuilder::new();
-    value_builder.with_decimal_places(2);
+    value_builder.with_decimal_places(dpoint);
     while let Some(next_character) = it.next() {
         value_builder.add(next_character);
     }
@@ -145,6 +145,12 @@ mod tests{
     fn given_valid_string_when_parse_money_then_returns_expected_currency_value() {
         let (_c,v) = parse_money("£34.3",2).unwrap();
         assert_eq!(v,3430);
+    }
+    
+    #[test]
+    fn given_valid_string_when_parse_money_with_3_decimal_places_then_returns_expected_currency_value() {
+        let (_c,v) = parse_money("£34.3",3).unwrap();
+        assert_eq!(v,34300);
     }
 
     //#[test]
