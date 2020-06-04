@@ -55,19 +55,19 @@ mod tests{
 
     #[test]
     fn given_valid_gbp_string_when_parse_money_then_returns_pound_currency_symbol() {
-        let (c,v) = parse_money("£34.3",2).unwrap();
+        let (c,_v) = parse_money("£34.3",2).unwrap();
         assert_eq!(c,'£');
     }
 
     #[test]
     fn given_valid_usd_string_when_parse_money_then_returns_dollar_currency_symbol() {
-        let (c,v) = parse_money("$15.50",2).unwrap();
+        let (c,_v) = parse_money("$15.50",2).unwrap();
         assert_eq!(c,'$');
     }
 
     #[test]
     fn given_valid_euro_string_when_parse_money_then_returns_euro_currency_symbol() {
-        let (c,v) = parse_money("€50",2).unwrap();
+        let (c,_v) = parse_money("€50",2).unwrap();
         assert_eq!(c,'€');
     }
 
