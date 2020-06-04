@@ -29,7 +29,7 @@ struct MoneyValueBuilder {
     digits: String,
     max_decimal_places:usize,
     num_decimal_places:usize,
-    decimal_point:bool,
+    num_decimal_points:usize,
 }
 
 impl MoneyValueBuilder {
@@ -38,18 +38,16 @@ impl MoneyValueBuilder {
             digits: String::new(),
             max_decimal_places: 0,
             num_decimal_places: 0,
-            decimal_point: false,
+            num_decimal_points: 0,
         }
     }
 
     fn add(&mut self, c:char) {
         match c {
-            '.' => {
-                self.decimal_point = true;
-            }
+            '.' => self.num_decimal_points += 1,
             _ => {
                 self.digits.push(c);
-                if self.decimal_point {
+                if self.num_decimal_points > 0 {
                     self.num_decimal_places += 1;
                 }
             }
@@ -61,6 +59,10 @@ impl MoneyValueBuilder {
     }
 
     fn build(mut self) -> Result<i32,ParseMoneyError> {
+        if self.num_decimal_points > 1 {
+            return Err(ParseMoneyError::TwoPointsErr);
+        }
+
         if self.num_decimal_places > self.max_decimal_places {
             return Err(ParseMoneyError::TooFarErr);
         }
@@ -86,8 +88,8 @@ impl MoneyValueBuilder {
 /// assert_eq!(v,3430);
 ///
 /// assert!(parse_money("£34.304",2).is_err());
-// assert!(parse_money("£34..04",2).is_err());
-//
+/// assert!(parse_money("£34..04",2).is_err());
+///
 // assert_eq!(parse_money("£.34",2),Ok(('£',34)));
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
@@ -161,7 +163,7 @@ mod tests{
         assert!(parse_money("£34.304",2).is_err());
     }
 
-    //#[test]
+    #[test]
     fn given_invalid_format_when_parse_money_then_returns_err() {
         assert!(parse_money("£34..04",2).is_err());
     }
