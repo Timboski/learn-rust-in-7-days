@@ -1,7 +1,7 @@
 /// Assignment 3: Build a binary tree and then put the data in sorted, and then pull it out in order.
 use std::vec::Vec;
 
-enum BinaryTree<T> {
+pub enum BinaryTree<T> {
     Tail,
     Head(T, Box<BinaryTree<T>>, Box<BinaryTree<T>>)
 }
@@ -9,19 +9,23 @@ enum BinaryTree<T> {
 use self::BinaryTree::*;
 
 impl<T> BinaryTree<T> {
-    fn new_empty() -> Self {
+    pub fn new_empty() -> Self {
         Tail
     }
 
-    fn new(v:T) -> Self {
+    pub fn new(v:T) -> Self {
         Head(v, Box::new(Tail), Box::new(Tail))
     }
 
-    fn convert_to_vec(self) -> Vec<T> {
+    pub fn convert_to_vec(self) -> Vec<T> {
         match self {
             Tail => return vec![],
-            Head(v,l,r) => return vec![v]
+            Head(v,l,r) => return BinaryTree::concatinate((*l).convert_to_vec(), v, (*r).convert_to_vec())
         }
+    }
+
+    fn concatinate(lhs:Vec<T>, v:T, rhs:Vec<T>) -> Vec<T> {
+        vec![v]
     }
 }
 
