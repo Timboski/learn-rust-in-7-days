@@ -109,6 +109,10 @@ pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     }
 
     while let Some(next_character) = it.next() {
+        if next_character != '.' && (next_character < '0' || next_character > '9') {
+            return Err(ParseMoneyError::NonDigitErr(next_character));
+        }
+
         value_builder.add(next_character);
     }
 
@@ -187,5 +191,23 @@ mod tests{
     fn given_negative_value_when_parse_money_then_returns_expected_result() {
         let (_c,v) = parse_money("-£123.45",2).unwrap();
         assert_eq!(v,-12345);
+    }
+
+    #[test]
+    fn given_invalid_character_at_end_of_string_when_parse_money_then_returns_err_containing_invalid_character() {
+        let err = parse_money("-£123.45p",2).unwrap_err();
+        assert_eq!(err, ParseMoneyError::NonDigitErr('p'));
+    }
+
+    #[test]
+    fn given_invalid_character_at_start_of_string_when_parse_money_then_returns_err_containing_first_invalid_character() {
+        let err = parse_money("£GB",2).unwrap_err();
+        assert_eq!(err, ParseMoneyError::NonDigitErr('G'));
+    }
+
+    #[test]
+    fn given_invalid_character_in_middle_of_number_when_parse_money_then_returns_err_containing_first_invalid_character() {
+        let err = parse_money("£15point3",2).unwrap_err();
+        assert_eq!(err, ParseMoneyError::NonDigitErr('p'));
     }
 }
