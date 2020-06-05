@@ -1,0 +1,9 @@
+[package]
+name = "assignment-3"
+version = "0.1.0"
+authors = ["Tim Boyle <https://github.com/Timboski/learn-rust-in-7-days>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
