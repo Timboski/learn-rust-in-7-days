@@ -1,6 +1,13 @@
 
-
-
+/// Create a printable representation of currency
+///
+/// ```
+/// use money_typesafe::printer::display_curr;
+/// assert_eq!(&display_curr(-3,'£',2),"-£0.03");
+/// assert_eq!(&display_curr(-3456,'£',2),"-£34.56");
+/// assert_eq!(&display_curr(3,'£',2),"£0.03");
+/// assert_eq!(&display_curr(3456,'£',2),"£34.56");
+/// ```
 pub fn display_curr(mut v:i32,sym:char,dp:usize)->String{
     let mut res = "".to_string();
     let minus =  v < 0;
@@ -28,18 +35,4 @@ pub fn display_curr(mut v:i32,sym:char,dp:usize)->String{
     res.push_str(b);
     res
     
-}
-
-#[cfg(test)]
-mod test{
-    use super::*;
-    #[test]
-    pub fn print_em(){
-        assert_eq!(&display_curr(-3,'£',2),"-£0.03");
-        assert_eq!(&display_curr(-3456,'£',2),"-£34.56");
-
-        assert_eq!(&display_curr(3,'£',2),"£0.03");
-        assert_eq!(&display_curr(3456,'£',2),"£34.56");
-        
-    }
 }
