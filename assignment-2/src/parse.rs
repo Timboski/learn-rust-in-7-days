@@ -95,29 +95,25 @@ impl MoneyValueBuilder {
 /// ```
 pub fn parse_money(s:&str, dpoint:usize)->Result<(char,i32),ParseMoneyError>{
     let mut it = s.chars();
-    let symbol;
+    let mut symbol;
 
     let mut value_builder = MoneyValueBuilder::new();
+    value_builder.with_decimal_places(dpoint);
 
     loop  {
-        let character = it.next();
-        match character {
-            None => return Err(ParseMoneyError::NoStringErr),
-            Some('-') => value_builder.add('-'),
-            s => {
-                symbol = s;
-                break;
-            } 
+        symbol = it.next().ok_or(ParseMoneyError::NoStringErr)?;
+        match symbol {
+            '-' => value_builder.add('-'),
+            _ => break,
         }
     }
 
-    value_builder.with_decimal_places(dpoint);
     while let Some(next_character) = it.next() {
         value_builder.add(next_character);
     }
 
     let value = value_builder.build()?;
-    Ok((symbol.unwrap(), value))
+    Ok((symbol, value))
 }
 
 #[cfg(test)]
